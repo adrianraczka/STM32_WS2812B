@@ -31,6 +31,10 @@
 #include "stdint.h"
 #include "seg_7_display.h"
 #include "WS2812B.h"
+#include "NEC_IR.h"
+#include <stdbool.h>
+#include "rgb_hsv.h"
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,29 +66,34 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-const uint8_t gamma8[] = {
-        0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-        0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,
-        1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,
-        2,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,  5,  5,  5,
-        5,  6,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  9,  9,  9, 10,
-        10, 10, 11, 11, 11, 12, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16,
-        17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 24, 24, 25,
-        25, 26, 27, 27, 28, 29, 29, 30, 31, 32, 32, 33, 34, 35, 35, 36,
-        37, 38, 39, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 50,
-        51, 52, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68,
-        69, 70, 72, 73, 74, 75, 77, 78, 79, 81, 82, 83, 85, 86, 87, 89,
-        90, 92, 93, 95, 96, 98, 99,101,102,104,105,107,109,110,112,114,
-        115,117,119,120,122,124,126,127,129,131,133,135,137,138,140,142,
-        144,146,148,150,152,154,156,158,160,162,164,167,169,171,173,175,
-        177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
-        215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
+
+char buff[50];
+bool is_ON = false;
+volatile int val;
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim == &htim6) {
         seg7_update();
+    } else if (htim == &htim7) {
+        button_control();
     }
 }
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim == &htim2)
+    {
+        switch (HAL_TIM_GetActiveChannel(&htim2))
+        {
+            case HAL_TIM_ACTIVE_CHANNEL_1:
+                ir_tim_interrupt();
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -120,41 +129,31 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM6_Init();
   MX_TIM3_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
     HAL_TIM_Base_Start_IT(&htim6);
+    HAL_TIM_Base_Start_IT(&htim7);
+    HAL_TIM_Base_Start(&htim2);
+    HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
     uint8_t value = 99;
     seg7_show(value);
     ws2812b_init();
-
-    for (int led = 0; led < 9; led++) {
-        ws2812b_set_color(led, 1, 1, 1);
-        ws2812b_update();
-    }
-    HAL_Delay(1000);
-
+    ir_init();
+    rgb RGB;
+    double temp = 0.00;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-      uint8_t r = gamma8[rand() % 256];
-      uint8_t g = gamma8[rand() % 256];
-      uint8_t b = gamma8[rand() % 256];
-
-      for (int led = 0; led < 9; led++) {
-          for (int i = 0; i < 256; i+=10) {
-              ws2812b_set_color(led, gamma8[i], 0, 0);
-              ws2812b_update();
-              HAL_Delay(1);
-          }
-      }
-      HAL_Delay(250);
-      for (int led = 0; led < 9; led++) {
-          ws2812b_set_color(led, 0, 0, 0);
-          ws2812b_update();
-      }
-      HAL_Delay(500);
-      HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        /*
+        RGB = hsl2rgb(temp, 1.0, 0.01);
+        LED.color.red = round(RGB.r * 255.0f);
+        LED.color.green = round(RGB.g * 255.0f);
+        LED.color.blue = round(RGB.b * 255.0f);
+        update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+        temp += 0.01;
+        */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

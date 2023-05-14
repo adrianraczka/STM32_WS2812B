@@ -39,6 +39,8 @@ set(STM32CUBEMX_GENERATED_FILES
 		CubeMX_files/Inc/main.h
 		CubeMX_files/Inc/seg_7_display.h
 		CubeMX_files/Inc/WS2812B.h
+		CubeMX_files/Inc/NEC_IR.h
+		CubeMX_files/Inc/rgb_hsv.h
 		CubeMX_files/Inc/gpio.h
 		CubeMX_files/Inc/tim.h
 		CubeMX_files/Inc/usart.h
@@ -49,6 +51,8 @@ set(STM32CUBEMX_GENERATED_FILES
 		CubeMX_files/Src/main.c
 		CubeMX_files/Src/seg_7_display.c
 		CubeMX_files/Src/WS2812B.c
+		CubeMX_files/Src/NEC_IR.c
+		CubeMX_files/Src/rgb_hsv.c
         CubeMX_files/Src/gpio.c
         CubeMX_files/Src/tim.c
 		CubeMX_files/Src/usart.c

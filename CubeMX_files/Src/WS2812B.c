@@ -6,7 +6,9 @@
 #define RESET_LEN		40
 #define LED_N			9
 
-static uint16_t led_buffer[RESET_LEN + 24 * LED_N + 1];
+struct WS2812B LED = {.mode.steady = true, .mode.dynamic_color_change = false, .mode.snake = false, .color.red = 1, .color.green = 1, .color.blue = 1, .leds_number = 9, .is_ON = true};
+
+static uint16_t led_buffer[RESET_LEN + 24 * LED_N];
 
 void ws2812b_init(void)
 {
@@ -17,7 +19,9 @@ void ws2812b_init(void)
     for (i = 0; i < 24 * LED_N; i++)
         led_buffer[RESET_LEN + i] = BIT_0_TIME;
 
-    led_buffer[RESET_LEN + 24 * LED_N] = 100;
+    for(i=0; i < 9; i++) {
+        ws2812b_set_color(i, LED.color.red, LED.color.green, LED.color.blue);
+    }
 
     HAL_TIM_Base_Start(&htim3);
     ws2812b_update();
