@@ -29,11 +29,10 @@
 #include <stdlib.h>
 #include "string.h"
 #include "stdint.h"
-#include "seg_7_display.h"
 #include "WS2812B.h"
 #include "NEC_IR.h"
 #include <stdbool.h>
-#include "rgb_hsv.h"
+#include "rgb_hsl_hsv.h"
 #include "math.h"
 /* USER CODE END Includes */
 
@@ -72,9 +71,7 @@ bool is_ON = false;
 volatile int val;
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim == &htim6) {
-        seg7_update();
-    } else if (htim == &htim7) {
+    if (htim == &htim7) {
         button_control();
     }
 }
@@ -135,25 +132,14 @@ int main(void)
     HAL_TIM_Base_Start_IT(&htim7);
     HAL_TIM_Base_Start(&htim2);
     HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
-    uint8_t value = 99;
-    seg7_show(value);
     ws2812b_init();
     ir_init();
-    rgb RGB;
-    double temp = 0.00;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-        /*
-        RGB = hsl2rgb(temp, 1.0, 0.01);
-        LED.color.red = round(RGB.r * 255.0f);
-        LED.color.green = round(RGB.g * 255.0f);
-        LED.color.blue = round(RGB.b * 255.0f);
-        update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
-        temp += 0.01;
-        */
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

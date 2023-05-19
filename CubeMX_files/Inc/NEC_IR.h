@@ -19,6 +19,14 @@
 #define IR_CODE_4x2         0x19
 #define IR_CODE_4x3         0x0d
 #define IR_CODE_5x1         0x0c
+#define IR_CODE_5x2         0x18
+#define IR_CODE_5x3         0x5e
+#define IR_CODE_6x1         0x08
+#define IR_CODE_6x2         0x1c
+#define IR_CODE_6x3         0x5a
+#define IR_CODE_7x1         0x42
+#define IR_CODE_7x2         0x52
+#define IR_CODE_7x3         0x4a
 
 
 
@@ -35,6 +43,5 @@ int ir_read(void);
 
 
 void button_control(void);
-void update_all_leds(uint8_t r, uint8_t g, uint8_t b);
 void move(void);
 #endif //NUCLEO_F446RE_NEC_IR_H

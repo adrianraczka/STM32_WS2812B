@@ -4,7 +4,6 @@
 #include "NEC_IR.h"
 #include "tim.h"
 #include "WS2812B.h"
-#include "rgb_hsv.h"
 
 typedef enum {
     PULSE_9MS,
@@ -54,8 +53,7 @@ static pulse_t calc_pulse(uint32_t time)
         return PULSE_ERROR;
 }
 
-void ir_tim_interrupt(void)
-{
+void ir_tim_interrupt(void) {
     pulse_t pulse;
 
     if (received_bits >= 32)
@@ -87,14 +85,12 @@ void ir_tim_interrupt(void)
     }
 }
 
-void ir_init(void)
-{
+void ir_init(void) {
     HAL_TIM_Base_Start(&htim2);
     HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
 }
 
-int ir_read(void)
-{
+int ir_read(void) {
     if (received_bits != 32)
         return -1;
     if (!check_data()) {
@@ -109,7 +105,6 @@ int ir_read(void)
     return value;
 }
 
-rgb RGB;
 void button_control(void) {
     int val = ir_read();
     char buff[25];
@@ -117,96 +112,154 @@ void button_control(void) {
         //ON
         case IR_CODE_1x1:
             if(!LED.is_ON) {
-                update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
                 LED.is_ON = true;
             }
             break;
         //OFF
         case IR_CODE_1x2:
             if(LED.is_ON) {
-                update_all_leds(0, 0, 0);
+                update_all_leds(0.00f, 0.00f, 0.00f);
                 LED.is_ON = false;
             }
             break;
         //
         case IR_CODE_1x3:
             break;
-        //
+        //steady mode ON
         case IR_CODE_2x1:
+            if(LED.is_ON) {
+                LED.mode.steady = true;
+                LED.mode.dynamic_color_change = false;
+                LED.mode.snake = false;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
             break;
-        //
+        //dynamic color change mode ON
         case IR_CODE_2x2:
+            if(LED.is_ON) {
+                LED.mode.steady = false;
+                LED.mode.dynamic_color_change = true;
+                LED.mode.snake = false;
+                update_all_leds(0.00f, 0.00f, 0.00f);
+            }
             break;
-        //
+        //snake mode ON
         case IR_CODE_2x3:
+            if(LED.is_ON) {
+                LED.mode.steady = false;
+                LED.mode.dynamic_color_change = false;
+                LED.mode.snake = true;
+                update_all_leds(0.00f, 0.00f, 0.00f);
+            }
             break;
-        //
+        //decreasing brightness
         case IR_CODE_3x1:
-            if (LED.is_ON && LED.mode.steady) {
-                if (LED.color.red > 5 + 1) {
-                    LED.color.red-=5;
-                }
-                if (LED.color.green > 5 + 1) {
-                    LED.color.green-=5;
-                }
-                if (LED.color.blue > 5 + 1) {
-                    LED.color.blue-=5;
+            if (LED.is_ON) {
+                if (LED.color.v > 0.02f) {
+                    LED.color.v-=0.01f;
                 }
             }
-            update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+            update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             break;
-        //
+        //increasing brightness
         case IR_CODE_3x2:
-            if (LED.is_ON && LED.mode.steady) {
-                if (LED.color.red < 255- 5 && LED.color.red != 0) {
-                    LED.color.red+=5;
-                }
-                if (LED.color.green < 255 - 5 && LED.color.green != 0) {
-                    LED.color.green+=5;
-                }
-                if (LED.color.blue < 255 - 5 && LED.color.blue != 0) {
-                    LED.color.blue+=5;
+            if (LED.is_ON) {
+                if (LED.color.v < 0.99f) {
+                    LED.color.v+=0.01f;
                 }
             }
-            update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+            update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             break;
-        //
+        //steady mode colors
         case IR_CODE_3x3:
+            if (LED.is_ON && LED.mode.steady) {
+                LED.color.s = 0.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
             break;
-        //RED
         case IR_CODE_4x1:
             if(LED.is_ON && LED.mode.steady) {
-                LED.color.red = 128;
-                LED.color.green = 0;
-                LED.color.blue = 0;
-                update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+                LED.color.h = 0.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
-        //GREEN
         case IR_CODE_4x2:
             if(LED.is_ON && LED.mode.steady) {
-                LED.color.red = 0;
-                LED.color.green = 128;
-                LED.color.blue = 0;
-                update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+                LED.color.h = 30.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
-        //BLUE
         case IR_CODE_4x3:
             if(LED.is_ON && LED.mode.steady) {
-                LED.color.red = 0;
-                LED.color.green = 0;
-                LED.color.blue = 128;
-                update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+                LED.color.h = 60.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
-        //WHITE
         case IR_CODE_5x1:
             if(LED.is_ON && LED.mode.steady) {
-                LED.color.red = 128;
-                LED.color.green = 128;
-                LED.color.blue = 128;
-                update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
+                LED.color.h = 90.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_5x2:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 120.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_5x3:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 150.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_6x1:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 180.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_6x2:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 210.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_6x3:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 240.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_7x1:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 270.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_7x2:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 300.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
+            }
+            break;
+        case IR_CODE_7x3:
+            if(LED.is_ON && LED.mode.steady) {
+                LED.color.h = 330.00f;
+                LED.color.s = 1.00f;
+                update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         default:
@@ -215,23 +268,5 @@ void button_control(void) {
     if (val != -1) {
         sprintf(buff, "%02x\r\n", val);
         HAL_UART_Transmit(&huart2, (uint8_t *) buff, strlen(buff), HAL_MAX_DELAY);
-    }
-}
-
-void update_all_leds(uint8_t r, uint8_t g, uint8_t b) {
-    for(int i=0; i < LED.leds_number; i++) {
-        ws2812b_set_color(i, r, g, b);
-        ws2812b_update();
-    }
-}
-
-void move(void) {
-    static double temp;
-    if(temp < 360) {
-        RGB = hsl2rgb(temp+=0.1, 1.0, 0.01);
-        LED.color.red = (uint8_t)(RGB.r * 255.0f);
-        LED.color.green = (uint8_t)(RGB.g * 255.0f);
-        LED.color.blue = (uint8_t)(RGB.b * 255.0f);
-        update_all_leds(LED.color.red, LED.color.green, LED.color.blue);
     }
 }

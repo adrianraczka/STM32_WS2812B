@@ -2,7 +2,7 @@
 #include "math.h"
 #include "stdlib.h"
 #include "stdio.h"
-#include "rgb_hsv.h"
+#include "rgb_hsl_hsv.h"
 
 #define MAX(x,y) ((x > y) ? x : y)
 #define MIN(x,y) ((x < y) ? x : y)
@@ -48,9 +48,9 @@ rgb hsv2rgb(float h, float s, float v) {
     rgb RGB;
 
     float C = s * v;
-    float H_ = h / 60;
+    float H_ = h / 60.0f;
 
-    float X = C * (1 - fabs(fmod(H_, 2.0f)) - 1);
+    float X = C * (1 - fabs(fmod(H_, 2.0f) - 1));
 
     float r1=0, g1=0, b1=0;
     if(H_ >= 0 && H_ < 1) {

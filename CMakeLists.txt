@@ -37,10 +37,9 @@ set(STM32CUBEMX_GENERATED_FILES
 		CubeMX_files/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c
 
 		CubeMX_files/Inc/main.h
-		CubeMX_files/Inc/seg_7_display.h
 		CubeMX_files/Inc/WS2812B.h
 		CubeMX_files/Inc/NEC_IR.h
-		CubeMX_files/Inc/rgb_hsv.h
+        CubeMX_files/Inc/rgb_hsl_hsv.h
 		CubeMX_files/Inc/gpio.h
 		CubeMX_files/Inc/tim.h
 		CubeMX_files/Inc/usart.h
@@ -49,10 +48,9 @@ set(STM32CUBEMX_GENERATED_FILES
 		CubeMX_files/Inc/stm32f4xx_it.h
 
 		CubeMX_files/Src/main.c
-		CubeMX_files/Src/seg_7_display.c
 		CubeMX_files/Src/WS2812B.c
 		CubeMX_files/Src/NEC_IR.c
-		CubeMX_files/Src/rgb_hsv.c
+		CubeMX_files/Src/rgb_hsl_hsv.c
         CubeMX_files/Src/gpio.c
         CubeMX_files/Src/tim.c
 		CubeMX_files/Src/usart.c
@@ -91,7 +89,7 @@ target_compile_options(${EXECUTABLE} PRIVATE
 		-fdata-sections
 		-fno-exceptions
 		-Wall
-		$<$<CONFIG:Debug>:-Og>
+		$<$<CONFIG:Debug>:-O0>
 		)
 
 target_link_options(${EXECUTABLE} PRIVATE
