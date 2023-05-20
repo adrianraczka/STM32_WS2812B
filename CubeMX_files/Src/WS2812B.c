@@ -1,5 +1,6 @@
 #include "WS2812B.h"
 #include "math.h"
+#include "float.h"
 
 #define BIT_0_TIME		32
 #define BIT_1_TIME		64
@@ -7,7 +8,7 @@
 #define RESET_LEN		40
 #define LED_N			9
 
-struct WS2812B LED = {.mode.steady = true, .mode.dynamic_color_change = false, .mode.snake = false, .color.h = 0.00f, .color.s = 0.00f, .color.v = 0.01f, .leds_number = 9, .is_ON = true};
+struct WS2812B LED = {.mode.steady = true, .mode.pulse = false, .mode.dynamic_color_change = false, .mode.snake = false, .color.h = 0.00f, .color.s = 0.00f, .color.v = 0.01f, .leds_number = 9, .is_ON = true};
 
 static uint16_t led_buffer[RESET_LEN + 24 * LED_N];
 
@@ -63,4 +64,36 @@ void update_all_leds(float h, float s, float l) {
         ws2812b_set_color(i, h, s, l);
         ws2812b_update();
     }
+}
+
+bool pulse_increment = true;
+void pulse(void) {
+    static uint8_t iteration;
+    static double x;
+    //rescaler - 2
+    if(iteration >= 2) {
+        //overflow
+        if(x == DBL_MAX) {
+            x = asin(sin(DBL_MAX));
+        }
+        x += 0.01;
+        update_all_leds(LED.color.h, LED.color.s, 0.5f * (1.0f + sinf((-3.1415f/2.0f) - (2 * x))));
+        iteration = 0;
+    }
+        iteration++;
+}
+
+void dynamic(void) {
+    static uint8_t iteration;
+    static double x;
+    //rescaler - 2
+    if(iteration >= 2) {
+        //overflow
+        if(x == DBL_MAX) {
+            x = acos(cos(DBL_MAX));
+        }
+        update_all_leds(180.0f * (1.0f + sinf(x += 0.01)), 1, LED.color.v);
+        iteration = 0;
+    }
+    iteration++;
 }

@@ -73,6 +73,9 @@ volatile int val;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim == &htim7) {
         button_control();
+        if(LED.is_ON && LED.mode.pulse) {
+            pulse();
+        }
     }
 }
 

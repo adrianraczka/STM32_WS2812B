@@ -15,6 +15,7 @@ struct Color {
 
 struct Mode {
     bool steady;
+    bool pulse;
     bool dynamic_color_change;
     bool snake;
 };
@@ -34,5 +35,6 @@ void ws2812b_set_color(uint16_t led, float h, float s, float l);
 void ws2812b_update(void);
 void update_all_leds(float h, float s, float l);
 void ws2812b_wait(void);
-
+void pulse(void);
+void dynamic(void);
 #endif //NUCLEO_F446RE_WS2812B_H
