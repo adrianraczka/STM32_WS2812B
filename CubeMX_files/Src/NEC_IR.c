@@ -128,50 +128,56 @@ void button_control(void) {
             break;
         //steady mode ON
         case IR_CODE_2x1:
-            if(LED.is_ON) {
+            if(LED.is_ON && !LED.mode.steady) {
                 LED.mode.steady = true;
                 LED.mode.pulse = false;
                 LED.mode.dynamic_color_change = false;
-                LED.mode.snake = false;
                 update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
-        //dynamic color change mode ON
+        //pulse mode ON
         case IR_CODE_2x2:
-            if(LED.is_ON) {
+            if(LED.is_ON && !LED.mode.pulse) {
                 LED.mode.steady = false;
                 LED.mode.pulse = true;
-                LED.mode.dynamic_color_change = true;
-                LED.mode.snake = false;
+                LED.mode.dynamic_color_change = false;
                 update_all_leds(0.00f, 0.00f, 0.00f);
             }
             break;
-        //snake mode ON
+        //dynamic color change mode ON
         case IR_CODE_2x3:
-            if(LED.is_ON) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.mode.steady = false;
-                LED.mode.dynamic_color_change = false;
-                LED.mode.snake = true;
+                LED.mode.pulse = false;
+                LED.mode.dynamic_color_change = true;
                 update_all_leds(0.00f, 0.00f, 0.00f);
             }
             break;
         //decreasing brightness
         case IR_CODE_3x1:
-            if (LED.is_ON) {
+            if (LED.is_ON && !LED.mode.pulse) {
                 if (LED.color.v > 0.02f) {
                     LED.color.v-=0.01f;
+                    //if dynamic mode in ON - do not update color
+                    if(LED.mode.dynamic_color_change) {
+                        break;
+                    }
+                    update_all_leds(LED.color.h, LED.color.s, LED.color.v);
                 }
             }
-            update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             break;
         //increasing brightness
         case IR_CODE_3x2:
-            if (LED.is_ON) {
+            if (LED.is_ON && !LED.mode.pulse) {
                 if (LED.color.v < 0.99f) {
                     LED.color.v+=0.01f;
+                    //if dynamic mode in ON - do not update color
+                    if(LED.mode.dynamic_color_change) {
+                        break;
+                    }
+                    update_all_leds(LED.color.h, LED.color.s, LED.color.v);
                 }
             }
-            update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             break;
         //steady and pulse modes colors
         case IR_CODE_3x3:

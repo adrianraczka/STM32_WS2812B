@@ -66,34 +66,20 @@ void update_all_leds(float h, float s, float l) {
     }
 }
 
-bool pulse_increment = true;
 void pulse(void) {
-    static uint8_t iteration;
     static double x;
-    //rescaler - 2
-    if(iteration >= 2) {
-        //overflow
-        if(x == DBL_MAX) {
-            x = asin(sin(DBL_MAX));
-        }
-        x += 0.01;
-        update_all_leds(LED.color.h, LED.color.s, 0.5f * (1.0f + sinf((-3.1415f/2.0f) - (2 * x))));
-        iteration = 0;
+    //overflow
+    if(x == DBL_MAX) {
+        x = asin(sin(DBL_MAX));
     }
-        iteration++;
+    update_all_leds(LED.color.h, LED.color.s, 0.5f * (1.0f + sinf((-3.1415f/2.0f) - (2*(x+=0.005)))));
 }
 
 void dynamic(void) {
-    static uint8_t iteration;
     static double x;
-    //rescaler - 2
-    if(iteration >= 2) {
-        //overflow
-        if(x == DBL_MAX) {
-            x = acos(cos(DBL_MAX));
-        }
-        update_all_leds(180.0f * (1.0f + sinf(x += 0.01)), 1, LED.color.v);
-        iteration = 0;
+    //overflow
+    if(x == DBL_MAX) {
+        x = acos(cos(DBL_MAX));
     }
-    iteration++;
+    update_all_leds(180.0f * (1.0f + sinf(x += 0.005)), 1, LED.color.v);
 }
