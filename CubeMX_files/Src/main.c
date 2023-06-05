@@ -25,15 +25,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <stdlib.h>
-#include "string.h"
-#include "stdint.h"
 #include "WS2812B.h"
 #include "NEC_IR.h"
 #include <stdbool.h>
-#include "rgb_hsl_hsv.h"
-#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

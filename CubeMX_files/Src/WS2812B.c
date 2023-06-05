@@ -53,9 +53,9 @@ void ws2812b_set_color(uint16_t led, float h, float s, float l) {
     rgb RGB = hsv2rgb(h, s, l);
 
     if (led < LED_N) {
-        set_byte(RESET_LEN + 24 * led, (uint8_t)round(RGB.g*255.00f));
-        set_byte(RESET_LEN + 24 * led + 8, (uint8_t)round(RGB.r*255.00f));
-        set_byte(RESET_LEN + 24 * led + 16, (uint8_t)round(RGB.b*255.00f));
+        set_byte(RESET_LEN + 24 * led, (uint8_t)round(RGB.g*255.00));
+        set_byte(RESET_LEN + 24 * led + 8, (uint8_t)round(RGB.r*255.00));
+        set_byte(RESET_LEN + 24 * led + 16, (uint8_t)round(RGB.b*255.00));
     }
 }
 

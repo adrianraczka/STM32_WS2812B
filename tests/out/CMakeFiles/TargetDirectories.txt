@@ -1,0 +1,9 @@
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/CMakeFiles/tests.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/CMakeFiles/edit_cache.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/CMakeFiles/rebuild_cache.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/Catch2/CMakeFiles/edit_cache.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/Catch2/CMakeFiles/rebuild_cache.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/Catch2/src/CMakeFiles/Catch2.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/Catch2/src/CMakeFiles/Catch2WithMain.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/Catch2/src/CMakeFiles/edit_cache.dir
+C:/Users/Adrian/Documents/Projects/STM32_WS2812B/tests/out/Catch2/src/CMakeFiles/rebuild_cache.dir

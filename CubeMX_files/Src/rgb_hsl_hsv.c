@@ -1,48 +1,10 @@
 #include <stdint.h>
 #include "math.h"
-#include "stdlib.h"
 #include "stdio.h"
 #include "rgb_hsl_hsv.h"
 
 #define MAX(x,y) ((x > y) ? x : y)
 #define MIN(x,y) ((x < y) ? x : y)
-
-void rgb2hsv(float r, float g, float b) {
-    float M = MAX(r, MAX(g,b));
-    float m = MIN(r, MIN(g,b));
-    float C = M - m;
-
-    float H_;
-    if(C == 0) {
-        H_ = 0;
-    }
-    else if(M == r) {
-        H_ = (uint8_t)((g - b) / C) % 6;
-    }
-    else if(M == g) {
-        H_ = ((b - r) / C) + 2.0f;
-    }
-    else if (M == b) {
-        H_ = ((r - g) / C) + 4.0f;
-    }
-    float H;
-    H = 60.0f * H_;
-
-    float L;
-    L = (M + m) / 2.0f;
-
-    double S;
-    if (L == 1 || L == 0) {
-        S = 0.0f;
-    }
-    else {
-        S = C / (1.0f - fabs((2.0f*L - 1.0f)));
-    }
-
-    printf("H: %.3f\nS: %.3f\nL: %.3f\n", H, S , L);
-}
-
-
 
 rgb hsv2rgb(float h, float s, float v) {
     rgb RGB;
@@ -78,7 +40,7 @@ rgb hsv2rgb(float h, float s, float v) {
         g1 = 0;
         b1 = C;
     }
-    else if (H_ >= 5 && H_ < 6) {
+    else if (H_ >= 5 && H_ <= 6) {
         r1 = C;
         g1 = 0;
         b1 = X;
@@ -127,7 +89,7 @@ rgb hsl2rgb(float h, float s, float l) {
         g1 = 0;
         b1 = C;
     }
-    else if (H_ >= 5 && H_ < 6) {
+    else if (H_ >= 5 && H_ <= 6) {
         r1 = C;
         g1 = 0;
         b1 = X;
