@@ -73,6 +73,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         else if(LED.is_ON && LED.mode.dynamic_color_change) {
             dynamic();
         }
+        else if(LED.is_ON && LED.mode.snake) {
+            snake();
+        }
+        else if(!LED.is_ON) {
+
+        }
     }
 }
 

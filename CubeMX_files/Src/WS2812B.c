@@ -6,9 +6,10 @@
 #define BIT_1_TIME		64
 
 #define RESET_LEN		40
-#define LED_N			9
-
-struct WS2812B LED = {.mode.steady = true, .mode.pulse = false, .mode.dynamic_color_change = false, .mode.snake = false, .color.h = 0.00f, .color.s = 0.00f, .color.v = 0.01f, .leds_number = 9, .is_ON = true};
+//number of LED - user defined
+#define LED_N           9
+//starting values of LED
+struct WS2812B LED = {.mode.steady = true, .mode.pulse = false, .mode.dynamic_color_change = false, .mode.snake = false, .color.h = 0.00f, .color.s = 0.00f, .color.v = 0.01f, .leds_number = LED_N, .is_ON = true};
 
 static uint16_t led_buffer[RESET_LEN + 24 * LED_N];
 
@@ -30,7 +31,7 @@ void ws2812b_init(void) {
     for (i = 0; i < RESET_LEN; i++)
         led_buffer[i] = 0;
 
-    for (i = 0; i < 24 * LED_N; i++)
+    for (i = 0; i < 24 * LED.leds_number; i++)
         led_buffer[RESET_LEN + i] = BIT_0_TIME;
 
     for(i=0; i < 9; i++) {
@@ -45,23 +46,26 @@ void ws2812b_update(void) {
     HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_1, (uint32_t*)led_buffer, sizeof(led_buffer));
 }
 
-void ws2812b_wait(void) {
-    while (HAL_TIM_GetChannelState(&htim3, TIM_CHANNEL_1) == HAL_TIM_CHANNEL_STATE_BUSY) {}
-}
+void ws2812b_set_color(uint16_t led, float h, float s, float v) {
+    rgb RGB = hsv2rgb(h, s, v);
 
-void ws2812b_set_color(uint16_t led, float h, float s, float l) {
-    rgb RGB = hsv2rgb(h, s, l);
-
-    if (led < LED_N) {
+    if (led < LED.leds_number) {
         set_byte(RESET_LEN + 24 * led, (uint8_t)round(RGB.g*255.00));
         set_byte(RESET_LEN + 24 * led + 8, (uint8_t)round(RGB.r*255.00));
         set_byte(RESET_LEN + 24 * led + 16, (uint8_t)round(RGB.b*255.00));
     }
 }
 
-void update_all_leds(float h, float s, float l) {
+void update_all_leds(float h, float s, float v) {
     for(int i=0; i < LED.leds_number; i++) {
-        ws2812b_set_color(i, h, s, l);
+        ws2812b_set_color(i, h, s, v);
+        ws2812b_update();
+    }
+}
+
+void turn_off_all_leds(void) {
+    for(int i=0; i < LED.leds_number; i++) {
+        ws2812b_set_color(i, LED.color.h, LED.color.s, 0);
         ws2812b_update();
     }
 }
@@ -81,5 +85,24 @@ void dynamic(void) {
     if(x == DBL_MAX) {
         x = acos(cos(DBL_MAX));
     }
-    update_all_leds(180.0f * (1.0f + sinf(x += 0.005)), 1, LED.color.v);
+    update_all_leds(180.0f * (1.0f + sinf(x += 0.005f)), 1.0f, LED.color.v);
+}
+
+uint16_t led_number;
+void snake(void) {
+    static float v;
+
+    if(v >= 0.99f) {
+        led_number++;
+        v = 0.00f;
+    }
+    else {
+        ws2812b_set_color(led_number, LED.color.h, LED.color.s, v+=0.01f);
+        ws2812b_update();
+    }
+    if(led_number == LED.leds_number) {
+        turn_off_all_leds();
+        led_number = 0;
+        v = 0.00f;
+    }
 }

@@ -28,13 +28,14 @@ struct WS2812B{
 };
 
 extern struct WS2812B LED;
+extern uint16_t led_number;
 
 void ws2812b_init(void);
-void ws2812b_init2(void);
-void ws2812b_set_color(uint16_t led, float h, float s, float l);
+void ws2812b_set_color(uint16_t led, float h, float s, float v);
 void ws2812b_update(void);
-void update_all_leds(float h, float s, float l);
-void ws2812b_wait(void);
+void update_all_leds(float h, float s, float v);
+void turn_off_all_leds(void);
 void pulse(void);
 void dynamic(void);
+void snake(void);
 #endif //NUCLEO_F446RE_WS2812B_H
