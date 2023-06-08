@@ -38,4 +38,5 @@ void turn_off_all_leds(void);
 void pulse(void);
 void dynamic(void);
 void snake(void);
+
 #endif //NUCLEO_F446RE_WS2812B_H

@@ -25,20 +25,42 @@ static void set_byte(uint32_t pos, uint8_t value) {
         value <<= 1;
     }
 }
+static void LED_check(void) {
+    turn_off_all_leds();
+    for (uint16_t i = 0; i < LED.leds_number; i++) {
+        if (i != 0) {
+            ws2812b_set_color(i - 1, LED.color.h, LED.color.s, 0.00f);
+            ws2812b_update();
+        }
+        ws2812b_set_color(i, LED.color.h, LED.color.s, 0.50f);
+        ws2812b_update();
+        HAL_Delay(150);
+    }
+
+    for (uint16_t i = LED.leds_number; i > 0; i--) {
+        if (i != LED.leds_number) {
+            ws2812b_set_color(i + 1, LED.color.h, LED.color.s, 0.00f);
+            ws2812b_update();
+        }
+        ws2812b_set_color(i, LED.color.h, LED.color.s, 0.50f);
+        ws2812b_update();
+        HAL_Delay(150);
+    }
+    turn_off_all_leds();
+}
 
 void ws2812b_init(void) {
     uint8_t i;
-    for (i = 0; i < RESET_LEN; i++)
-        led_buffer[i] = 0;
+    for (i = 0; i < RESET_LEN; i++) led_buffer[i] = 0;
 
-    for (i = 0; i < 24 * LED.leds_number; i++)
-        led_buffer[RESET_LEN + i] = BIT_0_TIME;
-
-    for(i=0; i < 9; i++) {
-        ws2812b_set_color(i, LED.color.h, LED.color.s, LED.color.v);
-    }
+    for (i = 0; i < 24 * LED.leds_number; i++) led_buffer[RESET_LEN + i] = BIT_0_TIME;
 
     HAL_TIM_Base_Start(&htim3);
+    LED_check();
+
+    for(uint16_t j = 0; j < LED.leds_number; j++) {
+        ws2812b_set_color(j, LED.color.h, LED.color.s, LED.color.v);
+    }
     ws2812b_update();
 }
 
@@ -59,15 +81,15 @@ void ws2812b_set_color(uint16_t led, float h, float s, float v) {
 void update_all_leds(float h, float s, float v) {
     for(int i=0; i < LED.leds_number; i++) {
         ws2812b_set_color(i, h, s, v);
-        ws2812b_update();
     }
+    ws2812b_update();
 }
 
 void turn_off_all_leds(void) {
     for(int i=0; i < LED.leds_number; i++) {
         ws2812b_set_color(i, LED.color.h, LED.color.s, 0);
-        ws2812b_update();
     }
+    ws2812b_update();
 }
 
 void pulse(void) {
@@ -93,20 +115,20 @@ void snake(void) {
     static float v;
     static bool increase = true;
 
-    if(v >= 0.99f && increase) {
+    if(v >= 0.95f && increase) {
         led_number++;
         v = 0.00f;
     }
-    else if(v <= 0.01f && !increase) {
+    else if(v <= 0.00f && !increase) {
         led_number--;
-        v = 0.99f;
+        v = 0.95f;
     }
     else {
         if(increase) ws2812b_set_color(led_number, LED.color.h, LED.color.s, v+=0.05f);
-        else ws2812b_set_color(led_number, LED.color.h, LED.color.s, v-=0.05f);
+        else if(!increase) ws2812b_set_color(led_number, LED.color.h, LED.color.s, v-=0.05f);
         ws2812b_update();
     }
-    if((led_number == LED.leds_number && increase && v >= 0.99f) || (led_number == 0 && !increase && v <= 0.01f)) {
+    if((led_number == LED.leds_number && increase && v >= 0.95f) || (led_number == 0 && !increase && v <= 0.00f)) {
         increase = !increase;
     }
 }

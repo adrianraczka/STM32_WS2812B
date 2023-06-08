@@ -59,9 +59,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-char buff[50];
-bool is_ON = false;
 volatile int val;
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
