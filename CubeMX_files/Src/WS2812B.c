@@ -91,18 +91,22 @@ void dynamic(void) {
 uint16_t led_number;
 void snake(void) {
     static float v;
+    static bool increase = true;
 
-    if(v >= 0.99f) {
+    if(v >= 0.99f && increase) {
         led_number++;
         v = 0.00f;
     }
+    else if(v <= 0.01f && !increase) {
+        led_number--;
+        v = 0.99f;
+    }
     else {
-        ws2812b_set_color(led_number, LED.color.h, LED.color.s, v+=0.01f);
+        if(increase) ws2812b_set_color(led_number, LED.color.h, LED.color.s, v+=0.05f);
+        else ws2812b_set_color(led_number, LED.color.h, LED.color.s, v-=0.05f);
         ws2812b_update();
     }
-    if(led_number == LED.leds_number) {
-        turn_off_all_leds();
-        led_number = 0;
-        v = 0.00f;
+    if((led_number == LED.leds_number && increase && v >= 0.99f) || (led_number == 0 && !increase && v <= 0.01f)) {
+        increase = !increase;
     }
 }

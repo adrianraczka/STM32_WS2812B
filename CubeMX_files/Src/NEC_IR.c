@@ -135,6 +135,7 @@ void button_control(void) {
                 LED.mode.dynamic_color_change = false;
                 LED.mode.snake = true;
                 turn_off_all_leds();
+                led_number = 0;
             }
             break;
         //steady mode ON
@@ -168,7 +169,7 @@ void button_control(void) {
             break;
         //decreasing brightness
         case IR_CODE_3x1:
-            if (LED.is_ON && !LED.mode.pulse) {
+            if (LED.is_ON && !LED.mode.pulse && !LED.mode.snake) {
                 if (LED.color.v > 0.02f) {
                     LED.color.v-=0.01f;
                     //if dynamic mode in ON - do not update color
@@ -181,7 +182,7 @@ void button_control(void) {
             break;
         //increasing brightness
         case IR_CODE_3x2:
-            if (LED.is_ON && !LED.mode.pulse) {
+            if (LED.is_ON && !LED.mode.pulse && !LED.mode.snake) {
                 if (LED.color.v < 0.99f) {
                     LED.color.v+=0.01f;
                     //if dynamic mode in ON - do not update color
@@ -192,105 +193,183 @@ void button_control(void) {
             break;
         //steady and pulse modes colors
         case IR_CODE_3x3:
-            if (LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if (LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.s = 0.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_4x1:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 0.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_4x2:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 30.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_4x3:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 60.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_5x1:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 90.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_5x2:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 120.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_5x3:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 150.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_6x1:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 180.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_6x2:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 210.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_6x3:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 240.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_7x1:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 270.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_7x2:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 300.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
         case IR_CODE_7x3:
-            if(LED.is_ON && (LED.mode.steady || LED.mode.pulse)) {
+            if(LED.is_ON && !LED.mode.dynamic_color_change) {
                 LED.color.h = 330.00f;
                 LED.color.s = 1.00f;
-                if(LED.mode.pulse) break;
+                if(LED.mode.pulse || LED.mode.snake) {
+                    if(LED.mode.snake) {
+                        turn_off_all_leds();
+                        led_number = 0;
+                    }
+                    break;
+                }
                 else update_all_leds(LED.color.h, LED.color.s, LED.color.v);
             }
             break;
