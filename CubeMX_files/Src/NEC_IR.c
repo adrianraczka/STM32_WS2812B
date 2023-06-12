@@ -35,9 +35,7 @@ static bool check_data(void) {
 
 static pulse_t calc_pulse(uint32_t time)
 {
-    if (time < 250)
-        return PULSE_ERROR;
-    else if (time < 1200)
+    if (time < 1200 && time > 250)
         return PULSE_SHORT;
     else if (time < 2000)
         return PULSE_LONG;
